@@ -7,7 +7,8 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../components/ProductSection.css";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+// ✅ Use environment variable for API URL (backend hosted on Render)
+const API_URL = process.env.REACT_APP_API_URL || "https://dreambackend-3.onrender.com";
 
 const mainCategories = [
   { id: "all", name: "All Products" },
@@ -21,28 +22,8 @@ const mainCategories = [
   { id: "waterproofing", name: "Waterproofing" },
 ];
 
-const subCategories = {
-  exterior: ["Water Puffing", "Ultima Protect Shine", "Apex Ultima", "Apex", "ACE", "Silicon"],
-  interior: [
-    "Royal Health Shield",
-    "Royal Blink",
-    "Royal Aspira",
-    "Royal Shine",
-    "Royal Luxury",
-    "Premium Emulsion",
-    "Tractor Emulsion",
-    "Silicon",
-  ],
-  distemper: ["Tractor Distemper", "Uno Distemper"],
-  "wood-polish": ["Chapra", "Sealer", "Lacker", "Melamine"],
-  enamel: ["Premium Gloss Enamel", "Satin Enamel"],
-  primer: ["Oil Primer", "Wood Primer", "Metal Primer"],
-  waterproofing: ["Damp Proof", "Hydro Lock", "Damp Shield"],
-};
-
 const AllProducts = () => {
   const [currentMainCategory, setCurrentMainCategory] = useState("all");
-  const [currentSubCategory, setCurrentSubCategory] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -55,11 +36,7 @@ const AllProducts = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        console.log("Fetching products from:", `${API_URL}/api/products`);
-
         const response = await axios.get(`${API_URL}/api/products`);
-        console.log("API Response:", response.data);
-
         if (Array.isArray(response.data) && response.data.length > 0) {
           setProducts(response.data);
         } else {
@@ -82,7 +59,6 @@ const AllProducts = () => {
     if (search) {
       setSearchTerm(search);
       setCurrentMainCategory("all");
-      setCurrentSubCategory(null);
     }
   }, [location]);
 
@@ -96,13 +72,8 @@ const AllProducts = () => {
           product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
           (product.subCategory && product.subCategory.toLowerCase().includes(searchTerm.toLowerCase()))
       );
-    } else {
-      if (currentMainCategory !== "all") {
-        filtered = filtered.filter((product) => product.category === currentMainCategory);
-      }
-      if (currentSubCategory) {
-        filtered = filtered.filter((product) => product.subCategory === currentSubCategory);
-      }
+    } else if (currentMainCategory !== "all") {
+      filtered = filtered.filter((product) => product.category === currentMainCategory);
     }
 
     return filtered;
@@ -110,12 +81,6 @@ const AllProducts = () => {
 
   const handleMainCategoryClick = (category) => {
     setCurrentMainCategory(category);
-    setCurrentSubCategory(null);
-    setSearchTerm("");
-  };
-
-  const handleSubCategoryClick = (subCategory) => {
-    setCurrentSubCategory(subCategory);
     setSearchTerm("");
   };
 

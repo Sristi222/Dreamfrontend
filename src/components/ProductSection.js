@@ -5,6 +5,9 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import "./ProductSection.css";
 
+// ✅ Use environment variable for API URL
+const API_URL = process.env.REACT_APP_API_URL || "https://dreambackend-3.onrender.com";
+
 const ProductSection = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,17 +15,10 @@ const ProductSection = () => {
   const [modalProduct, setModalProduct] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  // ✅ Use environment variable for API URL
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        console.log("Fetching products from:", `${API_URL}/api/products?limit=6`);
-
         const response = await axios.get(`${API_URL}/api/products?limit=6`);
-        console.log("API Response:", response.data); // Debugging log
-
         if (Array.isArray(response.data) && response.data.length > 0) {
           setProducts(response.data);
         } else {
@@ -37,7 +33,7 @@ const ProductSection = () => {
     };
 
     fetchProducts();
-  }, [API_URL]);
+  }, []);
 
   const openModal = (product) => {
     setModalProduct(product);
